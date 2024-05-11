@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<node name="/io/github/proatgram/steamd">
+    <interface name="io.github.proatgram.steamd.ClientUser">
+    <!-- Methods and signals for logging in and logging off -->
+        <!-- Methods: -->
+        <method name="log_on_with_steamid">
+            <arg type="t" name="steam_id" direction="in" />
+        </method>
+        <method name="log_on_with_credentials">
+            <arg type="s" name="username" direction="in" />
+            <arg type="s" name="password" direction="in" />
+            <arg type="b" name="rememberInfo" direction="in" />
+        </method>
+        <method name="try_cache_log_on">
+            <arg type="s" name="username" direction="in" />
+        </method>
+        <method name="log_off" />
+        <method name="get_log_on_state">
+            <arg type="i" name="log_on_state" direction="out" />
+        </method>
+        <method name="is_logged_on">
+            <arg type="b" name="logged_on" direction="out" />
+        </method>
+        <method name="is_connected">
+            <arg type="b" name="is_connected" direction="out" />
+        </method>
+        <method name="is_trying_to_log_on">
+            <arg type="b" name="trying_to_log_on" direction="out" />
+        </method>
+        <!-- Signals: -->
+        <signal name="steam_servers_status_update">
+            <arg type="i" name="status" />
+        </signal>
+    </interface>
+</node>
