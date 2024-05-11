@@ -15,9 +15,30 @@
         <method name="try_cache_log_on">
             <arg type="s" name="username" direction="in" />
         </method>
+        <method name="log_on_with_two_factor">
+            <arg type="s" name="username" direction="in" />
+            <arg type="s" name="password" direction="in" />
+            <arg type="s" name="two_factor_code" direction="in" />
+        </method>
+            <!-- Single argument used for cases where username and password are already stored -->
+        <method name="log_on_with_two_factor">
+            <arg type="s" name="two_factor_code" direction="in" />
+        </method>
+        <method name="log_on_with_steam_guard_code">
+            <arg type="s" name="username" direction="in" />
+            <arg type="s" name="password" direction="in" />
+            <arg type="s" name="steam_guard_code" direction="in" />
+        </method>
+            <!-- Single argument used for cases where username and password are already stored -->
+        <method name="log_on_with_steam_guard_code">
+            <arg type="s" name="steam_guard_code" direction="in" />
+        </method>
         <method name="log_off" />
         <method name="get_log_on_state">
             <arg type="i" name="log_on_state" direction="out" />
+        </method>
+        <method name="has_two_factor">
+            <arg type="b" name="result" direction="out" />
         </method>
         <method name="is_logged_on">
             <arg type="b" name="logged_on" direction="out" />
@@ -28,9 +49,118 @@
         <method name="is_trying_to_log_on">
             <arg type="b" name="trying_to_log_on" direction="out" />
         </method>
+        <method name="has_cached_credentials">
+            <arg type="s" name="username" direction="in" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="is_password_remembered">
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="destroy_cached_credentials">
+            <arg type="i" name="steam_unknown_return" direction="out" />
+        </method>
         <!-- Signals: -->
         <signal name="steam_servers_status_update">
             <arg type="i" name="status" />
         </signal>
+    <!-- Methods and signals for general things -->
+        <!-- Methods -->
+        <method name="get_client_instance">
+            <arg type="u" name="client_instance" direction="out" />
+        </method>
+        <method name="is_VAC_banned">
+            <arg type="b" name="VAC_banned" direction="out" />
+        </method>
+    <!-- Methods and signals for setting and getting user data -->
+        <!-- Methods: -->
+        <method name="get_email">
+            <arg type="b" name="result" direction="out" />
+            <arg type="b" name="validated" direction="out" />
+            <arg type="s" name="email" direction="out" />
+        </method>
+        <method name="set_email">
+            <arg type="s" name="email" direction="in" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="get_user_base_folder">
+            <arg type="s" name="result" direction="out" />
+        </method>
+        <method name="get_user_data_folder">
+            <arg type="t" name="gameId" direction="in" />
+            <arg type="b" name="result" direction="out" />
+            <arg type="s" name="folder" direction="out" />
+        </method>
+        <method name="get_user_config_folder">
+            <arg type="b" name="result" direction="out" />
+            <arg type="s" name="folder" direction="out" />
+        </method>
+        <method name="get_account_name">
+            <arg type="b" name="result" direction="out" />
+            <arg type="s" name="accountName" direction="out" />
+        </method>
+        <method name="get_account_name">
+            <arg type="t" name="steamId" direction="in" />
+            <arg type="b" name="result" direction="out" />
+            <arg type="s" name="accountName" direction="out" />
+        </method>
+    <!-- Methods and signals for games and such -->
+        <!-- Methods: -->
+        <method name="terminate_game_connection">
+            <arg type="u" name="ipServer" direction="in" />
+            <arg type="q" name="portServer" direction="in" />
+        </method>
+        <method name="signal_apps_to_shut_down">
+            <arg type="t" name="gameId" direction="in" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="terminate_app_multi_step">
+            <arg type="t" name="gameId" direction="in" />
+            <arg type="u" name="unknown" direction="in" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="is_game_running">
+            <arg type="t" name="gameId" direction="in" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="is_any_game_running">
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="is_game_window_ready">
+            <arg type="t" name="gameId" direction="in" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="request_custom_binary">
+            <arg type="s" name="absolutePath" direction="in" />
+            <arg type="u" name="appId" direction="in" />
+            <arg type="b" name="forceUpdate" direction="in" />
+            <arg type="b" name="appLaunchRequest" direction="in" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="run_install_script">
+            <arg type="u" name="appId" direction="in" />
+            <arg type="b" name="uninstall" direction="in" />
+            <arg type="s" name="unknown" direction="in" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="is_install_script_running">
+            <arg type="u" name="result" direction="out" />
+        </method>
+        <method name="get_install_script_state">
+            <arg type="s" name="description" direction="out" />
+            <arg type="u" name="numberSteps" direction="out" />
+            <arg type="u" name="currentStep" direction="out" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="spawn_process">
+            <arg type="s" name="applicationName" direction="in" />
+            <arg type="s" name="commandLine" direction="in" />
+            <arg type="s" name="currentDirectory" direction="in" />
+            <arg type="t" name="gameId" direction="in" />
+            <arg type="s" name="gameName" direction="in" />
+            <arg type="u" name="unknown1" direction="in" />
+            <arg type="u" name="unknown2" direction="in" />
+            <arg type="u" name="unknown3" direction="in" />
+            <arg type="b" name="result" direction="out" />
+        </method>
     </interface>
 </node>
