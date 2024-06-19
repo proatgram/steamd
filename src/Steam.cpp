@@ -32,8 +32,8 @@ Steamd::~Steamd() {
     m_callbacksRunner.join();
 }
 
-auto Steamd::log_on_with_steamid(const uint64_t &steam_id) -> void {
-    m_steamClientUser->LogOn(steam_id);
+auto Steamd::log_on_with_steamid(const uint64_t &steamId) -> void {
+    m_steamClientUser->LogOn(steamId);
 }
 
 auto Steamd::log_on_with_credentials(const std::string &username, const std::string &password, const bool &rememberInfo) -> void {

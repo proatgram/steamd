@@ -8,7 +8,7 @@ namespace steamd {
             ~Steamd();
 
         protected:
-            auto log_on_with_steamid(const uint64_t& steam_id) -> void final;
+            auto log_on_with_steamid(const uint64_t& steamId) -> void final;
             auto log_on_with_credentials(const std::string& username, const std::string& password, const bool &rememberInfo) -> void final;
             auto try_cache_log_on(const std::string &username) -> void final;
             auto log_off() -> void final;

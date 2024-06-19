@@ -5,7 +5,12 @@
     <!-- Methods and signals for logging in and logging off -->
         <!-- Methods: -->
         <method name="log_on_with_steamid">
-            <arg type="t" name="steam_id" direction="in" />
+            <!-- Represents all components of a CSteamID class -->
+            <!-- uint32: AccountID -->
+            <!-- unsigned int: AccountInstance -->
+            <!-- unsigned int: AccountType -->
+            <!-- EUniverse (enum: int32): EUniverse -->
+            <arg type="(uuui)" name="steamId" direction="in" />
         </method>
         <method name="log_on_with_credentials">
             <arg type="s" name="username" direction="in" />
@@ -18,7 +23,7 @@
         <method name="log_on_with_two_factor">
             <arg type="s" name="username" direction="in" />
             <arg type="s" name="password" direction="in" />
-            <arg type="s" name="two_factor_code" direction="in" />
+            <arg type="s" name="twoFactorCode" direction="in" />
         </method>
             <!-- Single argument used for cases where username and password are already stored -->
         <method name="log_on_with_two_factor">
@@ -27,12 +32,13 @@
         <method name="log_on_with_steam_guard_code">
             <arg type="s" name="username" direction="in" />
             <arg type="s" name="password" direction="in" />
-            <arg type="s" name="steam_guard_code" direction="in" />
+            <arg type="s" name="steamGuardCode" direction="in" />
         </method>
             <!-- Single argument used for cases where username and password are already stored -->
         <method name="log_on_with_steam_guard_code">
-            <arg type="s" name="steam_guard_code" direction="in" />
+            <arg type="s" name="steamGuardCode" direction="in" />
         </method>
+        <method name="send_validation_email" />
         <method name="log_off" />
         <method name="get_log_on_state">
             <arg type="i" name="log_on_state" direction="out" />
@@ -59,6 +65,9 @@
         <method name="destroy_cached_credentials">
             <arg type="i" name="steam_unknown_return" direction="out" />
         </method>
+        <method name="get_account_security_policy_flags">
+            <arg type="u" name="account_security_flags" direction="out" />
+        </method>
         <!-- Signals: -->
         <signal name="steam_servers_status_update">
             <arg type="i" name="status" />
@@ -70,6 +79,9 @@
         </method>
         <method name="is_VAC_banned">
             <arg type="b" name="VAC_banned" direction="out" />
+        </method>
+        <method name="is_behind_nat">
+            <arg type="b" name="is_behind_nat" direction="out" />
         </method>
     <!-- Methods and signals for setting and getting user data -->
         <!-- Methods: -->
@@ -86,7 +98,11 @@
             <arg type="s" name="result" direction="out" />
         </method>
         <method name="get_user_data_folder">
-            <arg type="t" name="gameId" direction="in" />
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
             <arg type="b" name="result" direction="out" />
             <arg type="s" name="folder" direction="out" />
         </method>
@@ -99,10 +115,174 @@
             <arg type="s" name="accountName" direction="out" />
         </method>
         <method name="get_account_name">
-            <arg type="t" name="steamId" direction="in" />
+            <!-- Represents all components of a CSteamID class -->
+            <!-- uint32: AccountID -->
+            <!-- unsigned int: AccountInstance -->
+            <!-- unsigned int: AccountType -->
+            <!-- EUniverse (enum: int32): EUniverse -->
+            <arg type="(uuui)" name="steamId" direction="in" />
             <arg type="b" name="result" direction="out" />
             <arg type="s" name="accountName" direction="out" />
         </method>
+        <method name="get_auth_session_ticket">
+            <arg type="ay" name="ticket" direction="out" />
+            <arg type="u" name="HAuthTicket" direction="out" />
+        </method>
+        <method name="begin_auth_session">
+            <arg type="s" name="thierTicket" direction="in" />
+            <!-- Represents all components of a CSteamID class -->
+            <!-- uint32: AccountID -->
+            <!-- unsigned int: AccountInstance -->
+            <!-- unsigned int: AccountType -->
+            <!-- EUniverse (enum: int32): EUniverse -->
+            <arg type="(uuui)" name="steamId" direction="in" />
+            <arg type="i" name="EBeginAuthSessionResult" direction="out" />
+        </method>
+        <method name="end_auth_session">
+            <!-- Represents all components of a CSteamID class -->
+            <!-- uint32: AccountID -->
+            <!-- unsigned int: AccountInstance -->
+            <!-- unsigned int: AccountType -->
+            <!-- EUniverse (enum: int32): EUniverse -->
+            <arg type="(uuui)" name="steamId" direction="in" />
+        </method>
+        <method name="cancel_auth_ticket">
+            <arg type="u" name="hAuthTicket" direction="in" />
+        </method>
+        <method name="get_player_steam_level">
+            <arg type="i" name="steam_level" direction="out" />
+        </method>
+        <method name="set_account_limited">
+            <arg type="b" name="limited" direction="in" />
+        </method>
+        <method name="get_account_limited">
+            <arg type="b" name="limited" direction="out" />
+        </method>
+        <method name="set_limited_account_can_invite_friends">
+            <arg type="b" name="can_invite_friends" direction="in" />
+        </method>
+        <method name="get_limited_account_can_invite_friends">
+            <arg type="b" name="can_invite_friends" direction="out" />
+        </method>
+        <method name="is_support_user">
+            <arg type="b" name="is_support_user" direction="out" />
+        </method>
+        <method name="needs_ssa_next_logon">
+            <arg type="b" name="needs_ssa_next_logon" direction="out" />
+        </method>
+        <method name="clear_needs_ssa_next_logon" />
+        <method name="get_wallet_balance">
+            <arg type="b" name="has_wallet" direction="in" />
+            <arg type="b" name="result" direction="out" />
+            <!-- Represents all components of a CAmount -->
+            <!-- signed int: Amount -->
+            <!-- signed int: Currency Code -->
+            <arg type="(ii)" name="balance" direction="out" />
+            <arg type="(ii)" name="pending" direction="out" />
+        </method>
+        <method name="prompt_to_verify_email">
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="prompt_to_change_password">
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="account_has_extra_security">
+            <arg type="b" name="has_extra_security" direction="out" />
+        </method>
+        <method name="account_should_show_lock_ui">
+            <arg type="b" name="should_show_lock_ui" />
+        </method>
+        <method name="get_number_authed_computers">
+            <arg type"i" name="number_authed_computers" direction="out" />
+        </method>
+        <method name="get_steam_guard_enabled_time">
+            <!-- In Unix Time (Since January 1 1970) -->
+            <arg type="u" name="steam_guard_enabled_time" direction="out" />
+        </method>
+        <method name="get_steam_guard_history">
+            <arg type="b" name="result" direction="out" />
+            <!-- Represents a structure of SteamGuard entries -->
+            <!-- An array of: -->
+            <!-- unsigned int: Timestamp in Unix Time (Since January 1 1970) -->
+            <!-- unsigned int: IPv4 Address if applicable -->
+            <!-- An array of: -->
+            <!-- unsigned short int: IPv6 Address if applicable -->
+            <!-- bool: Remember Computer -->
+            <!-- string: Geolocation Info -->
+            <!-- string: Unknown Variable -->
+            <arg type="a(uuaybss)" name="entries" direction="out" />
+        </method>
+        <method name="set_steam_guard_new_machine_dialog_response">
+            <arg type="b" name="isApproved" direction="in" />
+            <arg type="b" name="isWizardComplete" direction="in" />
+        </method>
+        <method name="set_phone_is_verified">
+            <arg type="b" name="isVerified" direction="in" />
+        </method>
+        <method name="is_phone_verified">
+            <arg type="b" name="is_verified" direction="out" />
+        </method>
+        <method name="set_phone_is_identifying">
+            <arg type="b" name="isIdentifying" direction="in" />
+        </method>
+        <method name="is_phone_identifying">
+            <arg type="b" name="is_identifying" direction="out" />
+        </method>
+        <method name="set_is_phone_requiring_verification">
+            <arg type="b" name="phoneRequiresVerification" direction="in" />
+        </method>
+        <method name="is_phone_requiring_verification">
+            <arg type="b" name="phone_requires_verification" direction="out" />
+        </method>
+        <method name="change_two_factor_authentication_options">
+            <arg type="i" name="options" direction="in" />
+        </method>
+        <method name="set_2nd_factor_authentication_code">
+            <arg type="s" name="authenticationCode" direction="in" />
+            <!-- Boolean must be inverted to pass into steamworks function -->
+            <arg type="b" name="rememberComputer" direction="in" />
+        </method>
+        <method name="set_user_machine_name">
+            <arg type="s" name="machineName" direction="in" />
+        </method>
+        <method name="get_user_machine_name">
+            <arg type="b" name="result" direction="out" />
+            <arg type="s" name="machineName" direction="out" />
+        </method>
+        <method name="get_email_domain_from_logon_failure">
+            <arg type="b" name="result" direction="out" />
+            <arg type="s" name="email_domain" direction="out" />
+        </method>
+        <method name="request_notifications" />
+        <method name="get_recovery_email">
+            <arg type="b" name="result" direction="out" />
+            <arg type="s" name="recovery_email" direction="out" />
+        </method>
+        <method name="can_logon_offline_mode">
+            <arg type="b" name="can_logon_offline_mode" direction="out" />
+        </method>
+        <method name="log_on_offline_mode">
+            <arg type="i" name="result" direction="out" />
+        </method>
+        <method name="get_offline_logon_ticket">
+            <arg type="s" name="username" direction="in" />
+            <arg type="b" name="result" direction="out" />
+            <!-- Protobuffed type: steammessages_offline.steamclient.proto -->
+            <arg type="(uu)" name="offline_logon_ticket" direction="out" />
+        </method>
+        <method name="validate_offline_logon_ticket">
+            <arg type="s" name="unknown" direction="in" />
+            <arg type="i" name="result" direction="out" />
+        </method>
+        <method name="is_other_session_playing">
+            <arg type="b" name="result" direction="out" />
+            <arg type="u" name="unknown" direction="out" />
+        </method>
+        <method name="kick_other_playing_session">
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <!-- Signals: -->
+        <signal name="steam_guard_new_machine_notification" />
     <!-- Methods and signals for games and such -->
         <!-- Methods: -->
         <method name="terminate_game_connection">
@@ -110,24 +290,79 @@
             <arg type="q" name="portServer" direction="in" />
         </method>
         <method name="signal_apps_to_shut_down">
-            <arg type="t" name="gameId" direction="in" />
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
             <arg type="b" name="result" direction="out" />
         </method>
         <method name="terminate_app_multi_step">
-            <arg type="t" name="gameId" direction="in" />
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
             <arg type="u" name="unknown" direction="in" />
             <arg type="b" name="result" direction="out" />
         </method>
         <method name="is_game_running">
-            <arg type="t" name="gameId" direction="in" />
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
             <arg type="b" name="result" direction="out" />
         </method>
         <method name="is_any_game_running">
             <arg type="b" name="result" direction="out" />
         </method>
+        <method name="get_number_games_running">
+            <arg type="i" name="number_games_running" direction="out" />
+        </method>
+        <method name="get_running_game_id">
+            <arg type="i" name="game" direction="in" />
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="out" />
+        </method>
+        <method name="get_running_game_pid" >
+            <arg type="i" name="game" direction="in" />
+            <arg type="i" name="pid" direction="out" />
+        </method>
         <method name="is_game_window_ready">
-            <arg type="t" name="gameId" direction="in" />
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
             <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="raise_window_for_game">
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
+            <arg type="i" name="steam_unknown_return" direction="out" />
+        </method>
+        <method name="is_app_overlay_enabled">
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
+            <arg type="b" name="app_overlay_enabled" direction="out" />
+        </method>
+        <method name="overlay_ignore_child_processes">
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
+            <arg type="b" name="app_overlay_enabled" direction="out" />
         </method>
         <method name="request_custom_binary">
             <arg type="s" name="absolutePath" direction="in" />
@@ -155,12 +390,104 @@
             <arg type="s" name="applicationName" direction="in" />
             <arg type="s" name="commandLine" direction="in" />
             <arg type="s" name="currentDirectory" direction="in" />
-            <arg type="t" name="gameId" direction="in" />
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
             <arg type="s" name="gameName" direction="in" />
             <arg type="u" name="unknown1" direction="in" />
             <arg type="u" name="unknown2" direction="in" />
             <arg type="u" name="unknown3" direction="in" />
             <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="get_app_ownership_ticket">
+            <arg type="u" name="appId" direction="in" />
+            <arg type="u" name="result" direction="out" />
+            <arg type="au" name="app_ownership_ticket_data" direction="out" />
+        </method>
+        <method name="get_app_ownership_ticket_extended">
+            <arg type="u" name="appId" direction="in" />
+            <arg type="u" name="result" direction="out" />
+            <arg type="au" name="app_ownership_ticket_data" direction="out" />
+            <arg type="u" name="steamId" direction="out" />
+            <arg type="au" name="signature" />
+        </method>
+        <method name="get_marketing_messages">
+            <arg type="i" name="flags" direction="in" />
+            <arg type="ax" name="messageId" direction="out" />
+            <arg type="as" name="messageUrl" direction="out" />
+        </method>
+        <method name="get_game_badge_level">
+            <arg type="i" name="series" direction="in" />
+            <arg type="b" name="foil" direction="in" />
+            <arg type="i" name="badge_level" direction="out" />
+        </method>
+        <method name="get_app_minutes_played">
+            <arg type="u" name="appId" direction="in" />
+            <arg type="b" name="result" direction="out" />
+            <arg type="i" name="playtime_forever" direction="out" />
+            <arg type="i" name="playtime_last_two_weeks" direction="out" />
+        </method>
+        <method name="get_app_last_played_time">
+            <arg type="u" name="appId" direction="in" />
+            <arg type="u" name="app_last_played_time" direction="out" />
+        </method>
+        <method name="get_app_update_disabled_seconds_remaining">
+            <arg type="u" name="appId" direction="in" />
+            <arg type="u" name="app_update_disabled_seconds_remaining" direction="out" />
+        </method>
+        <method name="get_guide_url">
+            <arg type="u" name="appId" direction="in" />
+            <arg type="b" name="result" direction="out" />
+            <arg type="s" name="guide_url" direction="out" />
+        </method>
+        <method name="is_subscribed_to_app">
+            <arg type="u" name="appId" direction="in" />
+            <arg type="b" name="is_subscribed_to_app" direction="out" />
+        </method>
+        <method name="get_subscribed_apps">
+            <arg type="u" name="result" direction="out" />
+            <arg type="au" name="subscribed_app_ids" direction="out" />
+        </method>
+        <method name="clear_and_set_app_tags">
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
+            <arg type="as" name="appTags" direction="in" />
+        </method>
+        <method name="remove_app_tag">
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
+            <arg type="s" name="appTag" direction="in" />
+        </method>
+        <method name="add_app_tag">
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
+            <arg type="s" name="appTag" direction="in" /> 
+        </method>
+        <method name="clear_app_tags">
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
+        </method>
+        <method name="set_app_hidden">
+            <!-- Represents all components of a CGameID -->
+            <!-- unsigned int: AppID -->
+            <!-- unsigned int: Type -->
+            <!-- unsigned int: ModID -->
+            <arg type="(uuu)" name="gameId" direction="in" />
+            <arg type="b" name="hidden" direction="in" />
         </method>
     </interface>
 </node>
