@@ -6,11 +6,11 @@
         <!-- Methods: -->
         <method name="log_on_with_steamid">
             <!-- Represents all components of a CSteamID class -->
-            <!-- uint32: AccountID -->
+            <!-- unsigned int: AccountID -->
             <!-- unsigned int: AccountInstance -->
-            <!-- unsigned int: AccountType -->
+            <!-- EAccountType (enum: int32): AccountType -->
             <!-- EUniverse (enum: int32): EUniverse -->
-            <arg type="(uuui)" name="steamId" direction="in" />
+            <arg type="(uuii)" name="steamId" direction="in" />
         </method>
         <method name="log_on_with_credentials">
             <arg type="s" name="username" direction="in" />
@@ -23,6 +23,7 @@
         <method name="log_on_with_two_factor">
             <arg type="s" name="username" direction="in" />
             <arg type="s" name="password" direction="in" />
+            <arg type="b" name="rememberInfo" direction="in" />
             <arg type="s" name="twoFactorCode" direction="in" />
         </method>
             <!-- Single argument used for cases where username and password are already stored -->
@@ -32,10 +33,13 @@
         <method name="log_on_with_steam_guard_code">
             <arg type="s" name="username" direction="in" />
             <arg type="s" name="password" direction="in" />
+            <arg type="b" name="rememberInfo" direction="in" />
+            <arg type="b" name="rememberComputer" direction="in" />
             <arg type="s" name="steamGuardCode" direction="in" />
         </method>
             <!-- Single argument used for cases where username and password are already stored -->
         <method name="log_on_with_steam_guard_code">
+            <arg type="b" name="rememberComputer" direction="in" />
             <arg type="s" name="steamGuardCode" direction="in" />
         </method>
         <method name="send_validation_email" />
@@ -63,6 +67,7 @@
             <arg type="b" name="result" direction="out" />
         </method>
         <method name="destroy_cached_credentials">
+            <arg type="s" name="username" direction="in" />
             <arg type="i" name="steam_unknown_return" direction="out" />
         </method>
         <method name="get_account_security_policy_flags">
@@ -78,6 +83,7 @@
             <arg type="u" name="client_instance" direction="out" />
         </method>
         <method name="is_VAC_banned">
+            <arg type="u" name="appId" direction="in" />
             <arg type="b" name="VAC_banned" direction="out" />
         </method>
         <method name="is_behind_nat">
@@ -116,11 +122,11 @@
         </method>
         <method name="get_account_name">
             <!-- Represents all components of a CSteamID class -->
-            <!-- uint32: AccountID -->
+            <!-- unsigned int: AccountID -->
             <!-- unsigned int: AccountInstance -->
-            <!-- unsigned int: AccountType -->
+            <!-- EAccountType (enum: int32): AccountType -->
             <!-- EUniverse (enum: int32): EUniverse -->
-            <arg type="(uuui)" name="steamId" direction="in" />
+            <arg type="(uuii)" name="steamId" direction="in" />
             <arg type="b" name="result" direction="out" />
             <arg type="s" name="accountName" direction="out" />
         </method>
@@ -131,20 +137,20 @@
         <method name="begin_auth_session">
             <arg type="s" name="thierTicket" direction="in" />
             <!-- Represents all components of a CSteamID class -->
-            <!-- uint32: AccountID -->
+            <!-- unsigned int: AccountID -->
             <!-- unsigned int: AccountInstance -->
-            <!-- unsigned int: AccountType -->
+            <!-- EAccountType (enum: int32): AccountType -->
             <!-- EUniverse (enum: int32): EUniverse -->
-            <arg type="(uuui)" name="steamId" direction="in" />
+            <arg type="(uuii)" name="steamId" direction="in" />
             <arg type="i" name="EBeginAuthSessionResult" direction="out" />
         </method>
         <method name="end_auth_session">
             <!-- Represents all components of a CSteamID class -->
-            <!-- uint32: AccountID -->
+            <!-- unsigned int: AccountID -->
             <!-- unsigned int: AccountInstance -->
-            <!-- unsigned int: AccountType -->
+            <!-- EAccountType (enum: int32): AccountType -->
             <!-- EUniverse (enum: int32): EUniverse -->
-            <arg type="(uuui)" name="steamId" direction="in" />
+            <arg type="(uuii)" name="steamId" direction="in" />
         </method>
         <method name="cancel_auth_ticket">
             <arg type="u" name="hAuthTicket" direction="in" />
@@ -193,7 +199,7 @@
             <arg type="b" name="should_show_lock_ui" />
         </method>
         <method name="get_number_authed_computers">
-            <arg type"i" name="number_authed_computers" direction="out" />
+            <arg type="i" name="number_authed_computers" direction="out" />
         </method>
         <method name="get_steam_guard_enabled_time">
             <!-- In Unix Time (Since January 1 1970) -->
