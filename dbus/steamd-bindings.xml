@@ -50,6 +50,7 @@
         <method name="has_two_factor">
             <arg type="b" name="result" direction="out" />
         </method>
+        <method name="get_two_factor_details" />
         <method name="is_logged_on">
             <arg type="b" name="logged_on" direction="out" />
         </method>
@@ -130,31 +131,6 @@
             <arg type="b" name="result" direction="out" />
             <arg type="s" name="accountName" direction="out" />
         </method>
-        <method name="get_auth_session_ticket">
-            <arg type="ay" name="ticket" direction="out" />
-            <arg type="u" name="HAuthTicket" direction="out" />
-        </method>
-        <method name="begin_auth_session">
-            <arg type="s" name="thierTicket" direction="in" />
-            <!-- Represents all components of a CSteamID class -->
-            <!-- unsigned int: AccountID -->
-            <!-- unsigned int: AccountInstance -->
-            <!-- EAccountType (enum: int32): AccountType -->
-            <!-- EUniverse (enum: int32): EUniverse -->
-            <arg type="(uuii)" name="steamId" direction="in" />
-            <arg type="i" name="EBeginAuthSessionResult" direction="out" />
-        </method>
-        <method name="end_auth_session">
-            <!-- Represents all components of a CSteamID class -->
-            <!-- unsigned int: AccountID -->
-            <!-- unsigned int: AccountInstance -->
-            <!-- EAccountType (enum: int32): AccountType -->
-            <!-- EUniverse (enum: int32): EUniverse -->
-            <arg type="(uuii)" name="steamId" direction="in" />
-        </method>
-        <method name="cancel_auth_ticket">
-            <arg type="u" name="hAuthTicket" direction="in" />
-        </method>
         <method name="get_player_steam_level">
             <arg type="i" name="steam_level" direction="out" />
         </method>
@@ -178,8 +154,8 @@
         </method>
         <method name="clear_needs_ssa_next_logon" />
         <method name="get_wallet_balance">
-            <arg type="b" name="has_wallet" direction="in" />
             <arg type="b" name="result" direction="out" />
+            <arg type="b" name="has_wallet" direction="out" />
             <!-- Represents all components of a CAmount -->
             <!-- signed int: Amount -->
             <!-- signed int: Currency Code -->
@@ -196,7 +172,7 @@
             <arg type="b" name="has_extra_security" direction="out" />
         </method>
         <method name="account_should_show_lock_ui">
-            <arg type="b" name="should_show_lock_ui" />
+            <arg type="b" name="should_show_lock_ui" direction="out" />
         </method>
         <method name="get_number_authed_computers">
             <arg type="i" name="number_authed_computers" direction="out" />
@@ -206,9 +182,10 @@
             <arg type="u" name="steam_guard_enabled_time" direction="out" />
         </method>
         <method name="get_steam_guard_history">
-            <arg type="b" name="result" direction="out" />
+            <arg type="u" name="numberEntries" direction="in" />
             <!-- Represents a structure of SteamGuard entries -->
             <!-- An array of: -->
+            <!-- bool: Result -->
             <!-- unsigned int: Timestamp in Unix Time (Since January 1 1970) -->
             <!-- unsigned int: IPv4 Address if applicable -->
             <!-- An array of: -->
@@ -216,12 +193,13 @@
             <!-- bool: Remember Computer -->
             <!-- string: Geolocation Info -->
             <!-- string: Unknown Variable -->
-            <arg type="a(uuaybss)" name="entries" direction="out" />
+            <arg type="a(buuaybss)" name="entries" direction="out" />
         </method>
         <method name="set_steam_guard_new_machine_dialog_response">
             <arg type="b" name="isApproved" direction="in" />
             <arg type="b" name="isWizardComplete" direction="in" />
         </method>
+        <method name="get_steam_guard_details" />
         <method name="set_phone_is_verified">
             <arg type="b" name="isVerified" direction="in" />
         </method>
@@ -241,12 +219,7 @@
             <arg type="b" name="phone_requires_verification" direction="out" />
         </method>
         <method name="change_two_factor_authentication_options">
-            <arg type="i" name="options" direction="in" />
-        </method>
-        <method name="set_2nd_factor_authentication_code">
-            <arg type="s" name="authenticationCode" direction="in" />
-            <!-- Boolean must be inverted to pass into steamworks function -->
-            <arg type="b" name="rememberComputer" direction="in" />
+            <arg type="i" name="option" direction="in" />
         </method>
         <method name="set_user_machine_name">
             <arg type="s" name="machineName" direction="in" />
@@ -291,10 +264,6 @@
         <signal name="steam_guard_new_machine_notification" />
     <!-- Methods and signals for games and such -->
         <!-- Methods: -->
-        <method name="terminate_game_connection">
-            <arg type="u" name="ipServer" direction="in" />
-            <arg type="q" name="portServer" direction="in" />
-        </method>
         <method name="signal_apps_to_shut_down">
             <!-- Represents all components of a CGameID -->
             <!-- unsigned int: AppID -->
