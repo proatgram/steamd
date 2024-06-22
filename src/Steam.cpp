@@ -50,7 +50,7 @@ auto Steamd::log_on_with_credentials(const std::string &username, const std::str
     m_steamClientUser->LogOn(m_steamClientUser->GetSteamID());
 }
 
-auto Steamd::log_on_with_two_factor(const std::string& username, const std::string& password, const bool &rememberInfo, const std::string& twoFactorCode) -> void {
+auto Steamd::log_on_with_two_factor_with_credentials(const std::string& username, const std::string& password, const bool &rememberInfo, const std::string& twoFactorCode) -> void {
     m_steamClientUser->SetLoginInformation(username.c_str(), password.c_str(), rememberInfo);
     m_steamClientUser->SetTwoFactorCode(twoFactorCode.c_str());
     m_steamClientUser->LogOn(m_steamClientUser->GetSteamID());
@@ -61,7 +61,7 @@ auto Steamd::log_on_with_two_factor(const std::string &twoFactorCode) -> void {
     m_steamClientUser->LogOn(m_steamClientUser->GetSteamID());
 }
 
-auto Steamd::log_on_with_steam_guard_code(const std::string& username, const std::string& password, const bool &rememberInfo, const bool &rememberComputer, const std::string& steamGuardCode) -> void {
+auto Steamd::log_on_with_steam_guard_code_with_credentials(const std::string& username, const std::string& password, const bool &rememberInfo, const bool &rememberComputer, const std::string& steamGuardCode) -> void {
     m_steamClientUser->SetLoginInformation(username.c_str(), password.c_str(), rememberInfo);
     m_steamClientUser->Set2ndFactorAuthCode(steamGuardCode.c_str(), !rememberComputer);
     m_steamClientUser->LogOn(m_steamClientUser->GetSteamID());
@@ -138,10 +138,12 @@ auto Steamd::is_behind_nat() -> bool {
 }
 
 auto Steamd::get_email() -> std::tuple<bool, bool, std::string> {
-    std::string email = std::string(320, '#');
     bool validated{};
+    std::string email(320, '\0');
+
     bool result = m_steamClientUser->GetEmail(email.data(), 320, &validated);
-    std::size_t index = email.find_first_of('#');
+
+    std::size_t index = email.find('\0');
     if (index != std::string::npos) {
         email.resize(index);
     }
@@ -164,10 +166,10 @@ auto Steamd::get_user_data_folder(const sdbus::Struct<uint32_t, uint32_t, uint32
         game = CGameID(gameId.get<0>(), gameId.get<2>());
     }
 
-    std::string path = std::string(PATH_MAX, '#');
+    std::string path = std::string(PATH_MAX, '\0');
 
     bool result = m_steamClientUser->GetUserDataFolder(game, path.data(), PATH_MAX);
-    std::size_t index = path.find_first_of('#');
+    std::size_t index = path.find('\0');
     if (index != std::string::npos) {
         path.resize(index);
     }
@@ -176,11 +178,11 @@ auto Steamd::get_user_data_folder(const sdbus::Struct<uint32_t, uint32_t, uint32
 }
 
 auto Steamd::get_user_config_folder() -> std::tuple<bool, std::string> {
-    std::string path = std::string(PATH_MAX, '#');
+    std::string path = std::string(PATH_MAX, '\0');
 
     bool result = m_steamClientUser->GetUserConfigFolder(path.data(), PATH_MAX);
     
-    std::size_t index = path.find_first_of('#');
+    std::size_t index = path.find('\0');
     if (index != std::string::npos) {
         path.resize(index);
     }
@@ -189,32 +191,30 @@ auto Steamd::get_user_config_folder() -> std::tuple<bool, std::string> {
 }
 
 auto Steamd::get_account_name() -> std::tuple<bool, std::string> {
-    std::string accountName = std::string(32, ' '); // I don't think spaces are allowed in Steam usernames?
-
-    bool result = m_steamClientUser->GetAccountName(accountName.data(), 32);
+    std::string accountName = std::string(32, '\0');
     
-    std::size_t index = accountName.find_first_of(' ');
+    bool result = m_steamClientUser->GetAccountName(accountName.data(), 128);
+    
+    std::size_t index = accountName.find('\0');
     if (index != std::string::npos) {
         accountName.resize(index);
     }
 
     return std::make_tuple(result, accountName);
 }
-
-auto Steamd::get_account_name(const sdbus::Struct<uint32_t, uint32_t, int32_t, int32_t>& steamId) -> std::tuple<bool, std::string> {
+auto Steamd::get_account_name_by_steam_id(const sdbus::Struct<uint32_t, uint32_t, int32_t, int32_t>& steamId) -> std::tuple<bool, std::string> {
     CSteamID id = CSteamID(steamId.get<0>(), steamId.get<1>(), static_cast<EUniverse>(steamId.get<3>()), static_cast<EAccountType>(steamId.get<2>()));
-    std::string accountName = std::string(32, ' '); // I don't think spaces are allowed in Steam usernames?
+    std::string accountName = std::string(32, '\0'); // I don't think spaces are allowed in Steam usernames?
 
     bool result = m_steamClientUser->GetAccountName(id, accountName.data(), 32);
     
-    std::size_t index = accountName.find_first_of(' ');
+    std::size_t index = accountName.find('\0');
     if (index != std::string::npos) {
         accountName.resize(index);
     }
 
     return std::make_tuple(result, accountName);
 }
-
 auto Steamd::get_player_steam_level() -> int32_t {
     return m_steamClientUser->GetPlayerSteamLevel();
 }
@@ -286,8 +286,8 @@ auto Steamd::get_steam_guard_history(const uint32_t &numberEntries) -> std::vect
         RTime32 timestamp{};
         SteamIPAddress_t ipAddress{};
         bool isRemembered{};
-        std::string geolocationInfo(512, '#');
-        std::string unknown(512, '#');
+        std::string geolocationInfo(512, '\0');
+        std::string unknown(512, '\0');
 
         bool result = m_steamClientUser->GetSteamGuardHistoryEntry(i, &timestamp, &ipAddress, &isRemembered, geolocationInfo.data(), 512, unknown.data(), 512);
 
@@ -295,12 +295,12 @@ auto Steamd::get_steam_guard_history(const uint32_t &numberEntries) -> std::vect
             break;
         }
 
-        std::size_t index = geolocationInfo.find_first_of('#');
+        std::size_t index = geolocationInfo.find('\0');
         if (index != std::string::npos) {
             geolocationInfo.resize(index);
         }
 
-        index = unknown.find_first_of('#');
+        index = unknown.find('\0');
         if (index != std::string::npos) {
             unknown.resize(index);
         }
@@ -362,11 +362,11 @@ auto Steamd::set_user_machine_name(const std::string &machineName) -> void {
 }
 
 auto Steamd::get_user_machine_name() -> std::tuple<bool, std::string> {
-    std::string machineName(32, '#');
+    std::string machineName(32, '\0');
 
     bool result = m_steamClientUser->GetUserMachineName(machineName.data(), 32);
 
-    std::size_t index = machineName.find_first_of('#');
+    std::size_t index = machineName.find('\0');
     if (index != std::string::npos) {
         machineName.resize(index);
     }
@@ -376,11 +376,11 @@ auto Steamd::get_user_machine_name() -> std::tuple<bool, std::string> {
 
 auto Steamd::get_email_domain_from_logon_failure() -> std::tuple<bool, std::string> {
     // Domains (After the @) can be a maximum of 255
-    std::string domain(255, ' ');
+    std::string domain(255, '\0');
 
     bool result = m_steamClientUser->GetEmailDomainFromLogonFailure(domain.data(), 255);
 
-    std::size_t index = domain.find_first_of(' ');
+    std::size_t index = domain.find('\0');
     if (index != std::string::npos) {
         domain.resize(index);
     }
@@ -394,15 +394,19 @@ auto Steamd::request_notifications() -> void {
 
 auto Steamd::get_recovery_email() -> std::tuple<bool, std::string> {
     // Emails can have a maximum of 320 characters
-    std::string recoveryEmail(320, ' ');
+    std::string recoveryEmail(320, '\0');
 
     bool result = m_steamClientUser->BGetRecoveryEmail(recoveryEmail.data(), 320);
 
-    std::size_t index = recoveryEmail.find_first_of(' ');
+    std::size_t index = recoveryEmail.find('\0');
     if (index != std::string::npos) {
         recoveryEmail.resize(index);
     }
     return std::make_tuple(result, recoveryEmail);
+}
+
+auto Steamd::can_logon_offline_mode() -> bool {
+    return m_steamClientUser->BCanLogonOfflineMode();
 }
 
 auto Steamd::log_on_offline_mode() -> int32_t {
@@ -518,6 +522,194 @@ auto Steamd::overlay_ignore_child_processes(const sdbus::Struct<uint32_t, uint32
     return m_steamClientUser->BOverlayIgnoreChildProcesses(game);
 }
 
+auto Steamd::request_custom_binary(const std::string& absolutePath, const uint32_t& appId, const bool& forceUpdate, const bool& appLaunchRequest) -> bool {
+    return m_steamClientUser->RequestCustomBinary(absolutePath.c_str(), appId, forceUpdate, appLaunchRequest);
+}
+
+auto Steamd::run_install_script(const uint32_t &appId, const bool &uninstall, const std::string &unknown) -> bool {
+    return m_steamClientUser->RunInstallScript(appId, unknown.c_str(), uninstall);
+}
+
+auto Steamd::is_install_script_running() -> uint32_t {
+    return m_steamClientUser->IsInstallScriptRunning();
+}
+
+auto Steamd::get_install_script_state() -> std::tuple<std::string, uint32_t, uint32_t, bool> {
+    std::string description(512, '\0');
+    uint32_t steps{};
+    uint32_t currentStep{};
+    
+    bool result = m_steamClientUser->GetInstallScriptState(description.data(), 512, &steps, &currentStep);
+
+    std::size_t index = description.find('\0');
+    if (index != std::string::npos) {
+        description.resize(index);
+    }
+
+    return std::make_tuple(description, steps, currentStep, result);
+}
+
+auto Steamd::spawn_process(const std::string& applicationName, const std::string& commandLine, const std::string& currentDirectory, const sdbus::Struct<uint32_t, uint32_t, uint32_t>& gameId, const std::string& gameName, const uint32_t& unknown1, const uint32_t& unknown2, const uint32_t& unknown3) -> bool {
+    CGameID game = CGameID(gameId.get<0>());
+
+    if(gameId.get<1>() != 0) {
+        game = CGameID(gameId.get<0>(), gameId.get<2>());
+    }
+
+    return m_steamClientUser->SpawnProcess(applicationName.c_str(), commandLine.c_str(), currentDirectory.c_str(), game, gameName.c_str(), unknown1, unknown2, unknown3);
+}
+
+auto Steamd::get_marketing_messages() -> std::vector<sdbus::Struct<int64_t, std::string, int32_t>> {
+    std::vector<sdbus::Struct<int64_t, std::string, int32_t>> marketingMessages{};
+    int32_t marketingMessageCount = m_steamClientUser->GetMarketingMessageCount();
+
+    for (std::size_t i = 0; i < marketingMessageCount; i++) {
+        // Kind of a long pre-initialized string
+        // Have to make sure we are able to fit an
+        // entire URL, which can be a max of 2048 characters
+        std::string messageUrl(2048, '\0');
+        GID_t messageGid{};
+        EMarketingMessageFlags messageFlags{};
+
+        bool result = m_steamClientUser->GetMarketingMessage(i, &messageGid, messageUrl.data(), 2048, &messageFlags);
+
+        std::size_t index = messageUrl.find('\0');
+        if (index != std::string::npos) {
+            messageUrl.resize(index);
+        }
+        
+        if (result) {
+            marketingMessages.push_back(sdbus::Struct<int64_t, std::string, int32_t>(messageGid, messageUrl, messageFlags));
+        }
+    }
+    
+    return marketingMessages;
+}
+
+auto Steamd::get_game_badge_level(const int32_t &series, const bool &foil) -> int32_t {
+    return m_steamClientUser->GetGameBadgeLevel(series, foil);
+}
+
+auto Steamd::get_app_minutes_played(const uint32_t &appId) -> std::tuple<bool, int32_t, int32_t> {
+    int32_t playtimeForever{};
+    int32_t playtimeLastTwoWeeks{};
+
+    bool result = m_steamClientUser->BGetAppMinutesPlayed(appId, &playtimeForever, &playtimeLastTwoWeeks);
+
+    return std::make_tuple(result, playtimeForever, playtimeLastTwoWeeks);
+}
+
+auto Steamd::get_app_last_played_time(const uint32_t &appId) -> uint32_t {
+    return m_steamClientUser->GetAppLastPlayedTime(appId);
+}
+
+auto Steamd::get_app_update_disabled_seconds_remaining(const uint32_t &appId) -> uint32_t {
+    return m_steamClientUser->GetAppUpdateDisabledSecondsRemaining(appId);
+}
+
+auto Steamd::get_guide_url(const uint32_t &appId) -> std::tuple<bool, std::string> {
+    // Kind of a long pre-initialized string
+    // Have to make sure we are able to fit an
+    // entire URL, which can be a max of 2048 characters
+    std::string guideUrl(2048, '\0');
+
+    bool result = m_steamClientUser->BGetGuideURL(appId, guideUrl.data(), 2048);
+
+    std::size_t index = guideUrl.find('\0');
+    if (index != std::string::npos) {
+        guideUrl.resize(index);
+    }
+
+    return std::make_tuple(result, guideUrl);
+}
+
+auto Steamd::is_subscribed_to_app(const uint32_t &appId) -> bool {
+    return m_steamClientUser->BIsSubscribedApp(appId);
+}
+
+auto Steamd::get_subscribed_apps() -> std::tuple<uint32_t, std::vector<uint32_t>> {
+    // Temporary implementation based on a whim of guesses...
+    // Assuming the return of the steam call is how many total are available
+    // Assuming the first parameter is a c style array
+    // Assuming the second parameter is the size of the first
+    // Not sure about the third...
+
+    uint32_t numSubscribedApps = m_steamClientUser->GetSubscribedApps(nullptr, 0, true);
+    std::vector<uint32_t> subscribedApps(numSubscribedApps);
+    m_steamClientUser->GetSubscribedApps(subscribedApps.data(), numSubscribedApps, true);
+    
+    return std::make_tuple(numSubscribedApps, subscribedApps);
+}
+
+auto Steamd::clear_and_set_app_tags(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId, const std::vector<std::string> &appTags) -> void {
+    CGameID game = CGameID(gameId.get<0>());
+
+    if(gameId.get<1>() != 0) {
+        game = CGameID(gameId.get<0>(), gameId.get<2>());
+    }
+
+    SteamParamStringArray_t params;
+    params.m_nNumStrings = appTags.size();
+
+    // Workaround to include a C++ vector of C++ strings
+    // in a Steam Array of C strings (char**)
+    // Without copying data
+    const char** array = new const char*[appTags.size()];
+    for (std::size_t i = 0; i < appTags.size(); i++) {
+        array[i] = appTags.at(i).data();
+    }
+
+    params.m_ppStrings = array;
+
+    m_steamClientUser->ClearAndSetAppTags(game, &params);
+
+    params.m_nNumStrings = 0;
+    params.m_ppStrings = nullptr;
+
+    // Single delete since the underlying pointers are already managed
+    delete array; // NOLINT
+}
+
+auto Steamd::remove_app_tag(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId, const std::string &appTag) -> void {
+    CGameID game = CGameID(gameId.get<0>());
+
+    if(gameId.get<1>() != 0) {
+        game = CGameID(gameId.get<0>(), gameId.get<2>());
+    }
+    
+    m_steamClientUser->RemoveAppTag(game, appTag.c_str());
+}
+
+auto Steamd::add_app_tag(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId, const std::string &appTag) -> void {
+    CGameID game = CGameID(gameId.get<0>());
+
+    if(gameId.get<1>() != 0) {
+        game = CGameID(gameId.get<0>(), gameId.get<2>());
+    }
+
+    m_steamClientUser->AddAppTag(game, appTag.c_str());
+}
+
+auto Steamd::clear_app_tags(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId) -> void {
+    CGameID game = CGameID(gameId.get<0>());
+
+    if(gameId.get<1>() != 0) {
+        game = CGameID(gameId.get<0>(), gameId.get<2>());
+    }
+
+    m_steamClientUser->ClearAppTags(game);
+}
+
+auto Steamd::set_app_hidden(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId, const bool &hidden) -> void {
+    CGameID game = CGameID(gameId.get<0>());
+
+    if(gameId.get<1>() != 0) {
+        game = CGameID(gameId.get<0>(), gameId.get<2>());
+    }
+
+    m_steamClientUser->SetAppHidden(game, hidden);
+}
+
 /* Steam Callbacks */
 
 auto Steamd::RunSteamCallbacks(Steamd *context) -> void {
@@ -527,13 +719,16 @@ auto Steamd::RunSteamCallbacks(Steamd *context) -> void {
 }
 
 auto Steamd::OnSteamServerConnectionFailure(SteamServerConnectFailure_t *cbMsg) -> void {
+    std::cout << "Connect fail" << std::endl;
     emitSteam_servers_status_update(cbMsg->k_iCallback);
 }
 
 auto Steamd::OnSteamServerConnected(SteamServersConnected_t *cbMsg) -> void {
+    std::cout << "Connected" << std::endl;
     emitSteam_servers_status_update(EResult::k_EResultOK);
 }
 
 auto Steamd::OnSteamServerDisconnected(SteamServersDisconnected_t *cbMsg) -> void {
+    std::cout << "Disconnected" << std::endl;
     emitSteam_servers_status_update(cbMsg->m_eResult);
 }

@@ -11,9 +11,9 @@ namespace steamd {
             auto log_on_with_steamid(const sdbus::Struct<uint32_t, uint32_t, int32_t, int32_t>& steamId) -> void final;
             auto log_on_with_credentials(const std::string& username, const std::string& password, const bool &rememberInfo) -> void final;
             auto try_cache_log_on(const std::string &username) -> void final;
-            auto log_on_with_two_factor(const std::string& username, const std::string& password, const bool &rememberInfo, const std::string& twoFactorCode) -> void final;
+            auto log_on_with_two_factor_with_credentials(const std::string& username, const std::string& password, const bool &rememberInfo, const std::string& twoFactorCode) -> void final;
             auto log_on_with_two_factor(const std::string& two_factor_code) -> void final;
-            auto log_on_with_steam_guard_code(const std::string& username, const std::string& password, const bool &rememberInfo, const bool &rememberComputer, const std::string& steamGuardCode) -> void final;
+            auto log_on_with_steam_guard_code_with_credentials(const std::string& username, const std::string& password, const bool &rememberInfo, const bool &rememberComputer, const std::string& steamGuardCode) -> void final;
             auto log_on_with_steam_guard_code(const bool &rememberComputer, const std::string& steamGuardCode) -> void final;
             auto send_validation_email() -> void final;
             auto log_off() -> void final;
@@ -36,7 +36,7 @@ namespace steamd {
             auto get_user_data_folder(const sdbus::Struct<uint32_t, uint32_t, uint32_t>& gameId) -> std::tuple<bool, std::string> final;
             auto get_user_config_folder() -> std::tuple<bool, std::string> final;
             auto get_account_name() -> std::tuple<bool, std::string> final;
-            auto get_account_name(const sdbus::Struct<uint32_t, uint32_t, int32_t, int32_t>& steamId) -> std::tuple<bool, std::string> final;
+            auto get_account_name_by_steam_id(const sdbus::Struct<uint32_t, uint32_t, int32_t, int32_t>& steamId) -> std::tuple<bool, std::string> final;
             auto get_player_steam_level() -> int32_t final;
             auto set_account_limited(const bool &limited) -> void final;
             auto get_account_limited() -> bool final;
@@ -86,6 +86,25 @@ namespace steamd {
             auto raise_window_for_game(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId) -> int32_t final;
             auto is_app_overlay_enabled(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId) -> bool final;
             auto overlay_ignore_child_processes(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId) -> bool final;
+            auto request_custom_binary(const std::string& absolutePath, const uint32_t& appId, const bool& forceUpdate, const bool& appLaunchRequest) -> bool final;
+            auto run_install_script(const uint32_t& appId, const bool& uninstall, const std::string& unknown) -> bool final;
+            auto is_install_script_running() -> uint32_t final;
+            auto get_install_script_state() -> std::tuple<std::string, uint32_t, uint32_t, bool> final;
+            auto spawn_process(const std::string& applicationName, const std::string& commandLine, const std::string& currentDirectory, const sdbus::Struct<uint32_t, uint32_t, uint32_t>& gameId, const std::string& gameName, const uint32_t& unknown1, const uint32_t& unknown2, const uint32_t& unknown3) -> bool final;
+            auto get_marketing_messages() -> std::vector<sdbus::Struct<int64_t, std::string, int32_t>> final;
+            auto get_game_badge_level(const int32_t &series, const bool &foil) -> int32_t final;
+            auto get_app_minutes_played(const uint32_t &appId) -> std::tuple<bool, int32_t, int32_t> final;
+            auto get_app_last_played_time(const uint32_t &appId) -> uint32_t final;
+            auto get_app_update_disabled_seconds_remaining(const uint32_t &appId) -> uint32_t final;
+            auto get_guide_url(const uint32_t &appId) -> std::tuple<bool, std::string> final;
+            auto is_subscribed_to_app(const uint32_t &appId) -> bool final;
+            // Needs testing, not sure how the steam function works
+            auto get_subscribed_apps() -> std::tuple<uint32_t, std::vector<uint32_t>> final;
+            auto clear_and_set_app_tags(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId, const std::vector<std::string> &appTags) -> void final;
+            auto remove_app_tag(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId, const std::string &apptag) -> void final;
+            auto add_app_tag(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId, const std::string &appTag) -> void final;
+            auto clear_app_tags(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId) -> void final;
+            auto set_app_hidden(const sdbus::Struct<uint32_t, uint32_t, uint32_t> &gameId, const bool &hidden) -> void final;
 
         private:
             STEAM_CALLBACK(Steamd, OnSteamServerConnectionFailure, SteamServerConnectFailure_t, m_cbSteamServerConnectFailure);

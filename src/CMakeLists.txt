@@ -18,6 +18,7 @@ target_sources(Steam
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Steam.cpp>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/Steam.hpp>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/Imported/SteamIPAddress.hpp>
 )
 
 target_include_directories(Steam

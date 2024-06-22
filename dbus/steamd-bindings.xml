@@ -20,7 +20,7 @@
         <method name="try_cache_log_on">
             <arg type="s" name="username" direction="in" />
         </method>
-        <method name="log_on_with_two_factor">
+        <method name="log_on_with_two_factor_with_credentials">
             <arg type="s" name="username" direction="in" />
             <arg type="s" name="password" direction="in" />
             <arg type="b" name="rememberInfo" direction="in" />
@@ -30,7 +30,7 @@
         <method name="log_on_with_two_factor">
             <arg type="s" name="two_factor_code" direction="in" />
         </method>
-        <method name="log_on_with_steam_guard_code">
+        <method name="log_on_with_steam_guard_code_with_credentials">
             <arg type="s" name="username" direction="in" />
             <arg type="s" name="password" direction="in" />
             <arg type="b" name="rememberInfo" direction="in" />
@@ -121,7 +121,7 @@
             <arg type="b" name="result" direction="out" />
             <arg type="s" name="accountName" direction="out" />
         </method>
-        <method name="get_account_name">
+        <method name="get_account_name_by_steam_id">
             <!-- Represents all components of a CSteamID class -->
             <!-- unsigned int: AccountID -->
             <!-- unsigned int: AccountInstance -->
@@ -376,22 +376,12 @@
             <arg type="u" name="unknown3" direction="in" />
             <arg type="b" name="result" direction="out" />
         </method>
-        <method name="get_app_ownership_ticket">
-            <arg type="u" name="appId" direction="in" />
-            <arg type="u" name="result" direction="out" />
-            <arg type="au" name="app_ownership_ticket_data" direction="out" />
-        </method>
-        <method name="get_app_ownership_ticket_extended">
-            <arg type="u" name="appId" direction="in" />
-            <arg type="u" name="result" direction="out" />
-            <arg type="au" name="app_ownership_ticket_data" direction="out" />
-            <arg type="u" name="steamId" direction="out" />
-            <arg type="au" name="signature" />
-        </method>
         <method name="get_marketing_messages">
-            <arg type="i" name="flags" direction="in" />
-            <arg type="ax" name="messageId" direction="out" />
-            <arg type="as" name="messageUrl" direction="out" />
+            <!-- Array Struct containing Marketing Message Information: -->
+            <!-- signed long int: Message ID -->
+            <!-- string: Message URL -->
+            <!-- signed int: Message Flags -->
+            <arg type="a(xsi)" name="messages" direction="out" />
         </method>
         <method name="get_game_badge_level">
             <arg type="i" name="series" direction="in" />
